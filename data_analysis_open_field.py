@@ -3,12 +3,15 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
+from tabulate import tabulate
+
 BATCH_1 = 0
 BATCH_2 = 150
 BATCH_3 = 300
 BATCH_4 = 450
 
 BATCH_SIZE = 150
+
 
 def load_mat_data(file):
     mat = scipy.io.loadmat(file)
@@ -21,6 +24,7 @@ def load_mat_data(file):
                   'priphery_times': periphery_times}
     return mouse_data
 
+
 def all_year_data_crossing(trails_per_year, mouses):
     """
     @input - all mat files from: curr year or from last year
@@ -31,6 +35,7 @@ def all_year_data_crossing(trails_per_year, mouses):
     union_cross_data = [load_mat_data(trail)['crossing_times'][0] for trail in trails_per_year]
     cross_curr_data_dict = dict(zip(m_no_suff, union_cross_data))
     return cross_curr_data_dict
+
 
 def all_year_data_grooming(trails_per_year, mouses):
     """
@@ -44,8 +49,9 @@ def all_year_data_grooming(trails_per_year, mouses):
     m_no_suff = [m.split('.')[0] for m in mouses]
     union_groom_data = [load_mat_data(trail)['grooming'] for trail in trails_per_year]
     groom_curr_data_dict = dict(zip(m_no_suff, union_groom_data))
-   # print(groom_curr_data_dict)
+    # print(groom_curr_data_dict)
     return groom_curr_data_dict
+
 
 def all_year_data_periphery_crossing(trails_per_year, mouses):
     """
@@ -72,6 +78,7 @@ def get_i_batch_n_variable(BATCH_START_TIME, all_data):
         mice_batch.update({key: ((BATCH_START_TIME < all_data[key]) & (all_data[key] < treshold)).sum()})
     return mice_batch
 
+
 def get_i_batch_n_variable_grooming(BATCH_START_TIME, all_data):
     """
     Get i of (1,2,3,4) batch for n of (cross, periphery, groom) param
@@ -91,13 +98,6 @@ def get_i_batch_n_variable_grooming(BATCH_START_TIME, all_data):
 
     return groom_lens_for_batch
 
-    #grooms_in_batch = np.where((BATCH_START_TIME < all_data[mouse][0]) & (all_data[mouse][1] < treshold))[0]
-
-    # for mouse in all_data:
-    #     x = np.where((BATCH_START_TIME < all_data[mouse][0]) & (all_data[mouse][1] < treshold))[0]
-    #     mice_batch_groom.append(x)
-
-        # mice_batch.update({mouse: ((BATCH_START_TIME < all_data[mouse][0]) & (all_data[mouse][1] < treshold)).sum()})
 
 def box_plot(batch_i, param):
     # Creating plot
@@ -112,6 +112,28 @@ def box_plot(batch_i, param):
     # show plot
     plt.show()
 
+
+def descriptive_stats_per_batch(bin1, bin2, bin3, bin4):
+    data = [[1, 5, batch_std(bin1), batch_mean(bin1), batch_min_max(bin1, 'max'), batch_min_max(bin1, 'min')],
+            [2, 5, batch_std(bin2), batch_mean(bin2), batch_min_max(bin2, 'max'), batch_min_max(bin2, 'min')],
+            [3, 5, batch_std(bin3), batch_mean(bin3), batch_min_max(bin3, 'max'), batch_min_max(bin3, 'min')],
+            [4, 5, batch_std(bin4), batch_mean(bin4), batch_min_max(bin4, 'max'), batch_min_max(bin4, 'min')]]
+    print(tabulate(data, headers=["Bin", "N", "std", "mean", "max", "min"]))
+
+
+def batch_mean(batch_dict):
+    mean = np.mean(list(batch_dict.values()))
+    return mean
+
+def batch_std(batch_dict):
+    std = np.std(list(batch_dict.values()))
+    return std
+
+def batch_min_max(batch_dict, extrema):
+    min = np.min(list(batch_dict.values()))
+    max = np.max(list(batch_dict.values()))
+    ret_val = min if extrema == 'min' else max
+    return ret_val
 
 if __name__ == '__main__':
     # list of all curr year trails
@@ -128,23 +150,31 @@ if __name__ == '__main__':
     periphery_curr_data_union = all_year_data_periphery_crossing(curr_paths, curr_year_trails)
     groom_curr_data_union = all_year_data_grooming(curr_paths, curr_year_trails)
 
-
     # batch 1 for all params:
-    batch_1_cross_2022 = get_i_batch_n_variable(BATCH_1, cross_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_1_periphery_2022 = get_i_batch_n_variable(BATCH_1, periphery_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_1_groom_2022 = get_i_batch_n_variable_grooming(BATCH_1, groom_curr_data_union) # map of mouse: amount of X in bach 1
+    batch_1_cross_2022 = get_i_batch_n_variable(BATCH_1, cross_curr_data_union)  
+    batch_1_periphery_2022 = get_i_batch_n_variable(BATCH_1,
+                                                    periphery_curr_data_union)  
+    batch_1_groom_2022 = get_i_batch_n_variable_grooming(BATCH_1,
+                                                         groom_curr_data_union)  
 
-    batch_2_cross_2022 = get_i_batch_n_variable(BATCH_2, cross_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_2_periphery_2022 = get_i_batch_n_variable(BATCH_2, periphery_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_2_groom_2022 = get_i_batch_n_variable_grooming(BATCH_2, groom_curr_data_union) # map of mouse: amount of X in bach 1
 
-    batch_3_cross_2022 = get_i_batch_n_variable(BATCH_3, cross_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_3_periphery_2022 = get_i_batch_n_variable(BATCH_3, periphery_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_3_groom_2022 = get_i_batch_n_variable_grooming(BATCH_3, groom_curr_data_union) # map of mouse: amount of X in bach 1
+    batch_2_cross_2022 = get_i_batch_n_variable(BATCH_2, cross_curr_data_union)  
+    batch_2_periphery_2022 = get_i_batch_n_variable(BATCH_2,
+                                                    periphery_curr_data_union)  
+    batch_2_groom_2022 = get_i_batch_n_variable_grooming(BATCH_2,
+                                                         groom_curr_data_union)  
 
-    batch_4_cross_2022 = get_i_batch_n_variable(BATCH_4, cross_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_4_periphery_2022 = get_i_batch_n_variable(BATCH_4, periphery_curr_data_union) # map of mouse: amount of X in bach 1
-    batch_4_groom_2022 = get_i_batch_n_variable_grooming(BATCH_4, groom_curr_data_union) # map of mouse: amount of X in bach 1
+    batch_3_cross_2022 = get_i_batch_n_variable(BATCH_3, cross_curr_data_union)  
+    batch_3_periphery_2022 = get_i_batch_n_variable(BATCH_3,
+                                                    periphery_curr_data_union)  
+    batch_3_groom_2022 = get_i_batch_n_variable_grooming(BATCH_3,
+                                                         groom_curr_data_union)  
+
+    batch_4_cross_2022 = get_i_batch_n_variable(BATCH_4, cross_curr_data_union)  
+    batch_4_periphery_2022 = get_i_batch_n_variable(BATCH_4,
+                                                    periphery_curr_data_union)  
+    batch_4_groom_2022 = get_i_batch_n_variable_grooming(BATCH_4,
+                                                         groom_curr_data_union)  
 
     # box_plot([list(batch_1_cross_2022.values()), list(batch_2_cross_2022.values()),
     #          list(batch_3_cross_2022.values()), list(batch_4_cross_2022.values())], "Crossing")
@@ -152,24 +182,20 @@ if __name__ == '__main__':
     # box_plot([list(batch_1_periphery_2022.values()), list(batch_2_periphery_2022.values()),
     #          list(batch_3_periphery_2022.values()), list(batch_4_periphery_2022.values())], "Periphery crossing")
     #
-    box_plot([list(batch_1_groom_2022), list(batch_2_groom_2022),
-              list(batch_3_groom_2022), list(batch_4_groom_2022)], "Grooming")
-    print(batch_1_groom_2022)
-    print(batch_2_groom_2022)
-    print(batch_3_groom_2022)
-    print(batch_4_groom_2022)
+    # box_plot([list(batch_1_groom_2022), list(batch_2_groom_2022),list(batch_3_groom_2022), list(batch_4_groom_2022)], "Grooming")
+    # print(batch_1_cross_2022)
+    # print(batch_2_groom_2022)
+    # print(batch_3_groom_2022)
+    # print(batch_4_groom_2022)
 
-
-
-##############################################################################################################################
+    ##############################################################################################################################
     # Last year
     cross_last_data_union = all_year_data_crossing(former_paths, former_year_trails)
     periphery_last_data_union = all_year_data_periphery_crossing(former_paths, former_year_trails)
     groom_last_data_union = all_year_data_grooming(former_paths, former_year_trails)
 
-
     batch_1_cross_2021 = get_i_batch_n_variable(BATCH_1, cross_last_data_union)
-    batch_1_periphery_2021 = get_i_batch_n_variable(BATCH_1,periphery_last_data_union)
+    batch_1_periphery_2021 = get_i_batch_n_variable(BATCH_1, periphery_last_data_union)
     batch_1_groom_2021 = get_i_batch_n_variable_grooming(BATCH_1, groom_last_data_union)
 
     batch_2_cross_2021 = get_i_batch_n_variable(BATCH_2, cross_last_data_union)
@@ -177,7 +203,7 @@ if __name__ == '__main__':
     batch_2_groom_2021 = get_i_batch_n_variable_grooming(BATCH_2, groom_last_data_union)
 
     batch_3_cross_2021 = get_i_batch_n_variable(BATCH_3, cross_last_data_union)
-    batch_3_periphery_2021 = get_i_batch_n_variable(BATCH_3,periphery_last_data_union)
+    batch_3_periphery_2021 = get_i_batch_n_variable(BATCH_3, periphery_last_data_union)
     batch_3_groom_2021 = get_i_batch_n_variable_grooming(BATCH_3, groom_last_data_union)
 
     batch_4_cross_2021 = get_i_batch_n_variable(BATCH_4, cross_last_data_union)
@@ -191,10 +217,21 @@ if __name__ == '__main__':
     # box_plot([list(batch_1_periphery_2021.values()), list(batch_2_periphery_2021.values()),
     #           list(batch_3_periphery_2021.values()), list(batch_4_periphery_2021.values())], "Periphery crossing")
     #
-    box_plot([list(batch_1_groom_2021), list(batch_2_groom_2021),
-              list(batch_3_groom_2021), list(batch_4_groom_2021)], "Grooming")
-    print('2021 - last year data')
-    print(list(batch_1_groom_2021))
-    print(list(batch_2_groom_2021))
-    print(list(batch_3_groom_2021))
-    print(list(batch_4_groom_2021))
+    # box_plot([list(batch_1_groom_2021), list(batch_2_groom_2021),
+    #           list(batch_3_groom_2021), list(batch_4_groom_2021)], "Grooming")
+    #
+    ##############################################################################################################################
+    """
+    Descriptive stats for cross
+    """
+    print("2022 descriptive statistics for crossing:")
+    print(descriptive_stats_per_batch(batch_1_cross_2022, batch_2_cross_2022, batch_3_cross_2022, batch_4_cross_2022))
+    print("2021 descriptive statistics for crossing:")
+    print(descriptive_stats_per_batch(batch_1_cross_2021, batch_2_cross_2021, batch_3_cross_2021, batch_4_cross_2021))
+    """
+    Descriptive stats for periphery cross
+    """
+    print("2022 descriptive statistics for periphery crossing:")
+    print(descriptive_stats_per_batch(batch_1_periphery_2022, batch_2_periphery_2022, batch_3_periphery_2022, batch_4_periphery_2022))
+    print("2021 descriptive statistics for periphery crossing:")
+    print(descriptive_stats_per_batch(batch_1_periphery_2021, batch_2_periphery_2021, batch_3_periphery_2021, batch_4_periphery_2021))
