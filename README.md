@@ -1,8 +1,9 @@
 # Neurobiology_lab_II
 Lab no2 - Open field
+
 That code includes:
 
-0. Methods who can anzlyze the data collected from a group of mice, strolling and stessing in a open field.
+0. Methods who can anzlyze the data collected from a group of mice, strolling and stessing in an open field.
 <img width="229" alt="image" src="https://user-images.githubusercontent.com/71634031/208270731-0ba6bb33-f29a-4ffe-9947-c1a08c42c8a7.png">
 
 1. Some clumsy box graphs
