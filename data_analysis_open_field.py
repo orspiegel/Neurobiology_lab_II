@@ -113,25 +113,53 @@ def box_plot(batch_i, param):
     plt.show()
 
 
-def descriptive_stats_per_batch(bin1, bin2, bin3, bin4):
-    data = [[1, 5, batch_std(bin1), batch_mean(bin1), batch_min_max(bin1, 'max'), batch_min_max(bin1, 'min')],
-            [2, 5, batch_std(bin2), batch_mean(bin2), batch_min_max(bin2, 'max'), batch_min_max(bin2, 'min')],
-            [3, 5, batch_std(bin3), batch_mean(bin3), batch_min_max(bin3, 'max'), batch_min_max(bin3, 'min')],
-            [4, 5, batch_std(bin4), batch_mean(bin4), batch_min_max(bin4, 'max'), batch_min_max(bin4, 'min')]]
+def descriptive_stats_per_batch(bin1, bin2, bin3, bin4, groom=False, n=6):
+    if groom:
+        data = [[1, n, batch_std(bin1, groom=True), batch_mean(bin1, groom=True), batch_min_max(bin1, 'max', groom=True), batch_min_max(bin1, 'min', groom=True)],
+                [2, n, batch_std(bin2, groom=True), batch_mean(bin2, groom=True), batch_min_max(bin2, 'max', groom=True), batch_min_max(bin2, 'min', groom=True)],
+                [3, n, batch_std(bin3, groom=True), batch_mean(bin3, groom=True), batch_min_max(bin3, 'max', groom=True), batch_min_max(bin3, 'min', groom=True)],
+                [4, n, batch_std(bin4, groom=True), batch_mean(bin4, groom=True), batch_min_max(bin4, 'max', groom=True), batch_min_max(bin4, 'min', groom=True)]]
+
+    else:
+        data = [[1, n, batch_std(bin1), batch_mean(bin1), batch_min_max(bin1, 'max'), batch_min_max(bin1, 'min')],
+            [2, n, batch_std(bin2), batch_mean(bin2), batch_min_max(bin2, 'max'), batch_min_max(bin2, 'min')],
+            [3, n, batch_std(bin3), batch_mean(bin3), batch_min_max(bin3, 'max'), batch_min_max(bin3, 'min')],
+            [4, n, batch_std(bin4), batch_mean(bin4), batch_min_max(bin4, 'max'), batch_min_max(bin4, 'min')]]
+
     print(tabulate(data, headers=["Bin", "N", "std", "mean", "max", "min"]))
 
 
-def batch_mean(batch_dict):
+def batch_mean(batch_dict, groom=False):
+    if groom:
+        mean = 0
+        if len(batch_dict) > 0:
+            mean = np.mean(batch_dict)
+        return mean
+
     mean = np.mean(list(batch_dict.values()))
     return mean
 
-def batch_std(batch_dict):
+def batch_std(batch_dict, groom=False):
+    if groom:
+        std = 0
+        if len(batch_dict) > 0:
+            std = np.std(batch_dict)
+        return std
+
+
     std = np.std(list(batch_dict.values()))
     return std
 
-def batch_min_max(batch_dict, extrema):
-    min = np.min(list(batch_dict.values()))
-    max = np.max(list(batch_dict.values()))
+def batch_min_max(batch_dict, extrema, groom=False):
+    if groom:
+        min,max = (0,0)
+        if len(batch_dict) > 0:
+            min = np.min(batch_dict)
+            max = np.max(batch_dict)
+    else:
+        min = np.min(list(batch_dict.values()))
+        max = np.max(list(batch_dict.values()))
+
     ret_val = min if extrema == 'min' else max
     return ret_val
 
@@ -225,13 +253,27 @@ if __name__ == '__main__':
     Descriptive stats for cross
     """
     print("2022 descriptive statistics for crossing:")
-    print(descriptive_stats_per_batch(batch_1_cross_2022, batch_2_cross_2022, batch_3_cross_2022, batch_4_cross_2022))
+    print(descriptive_stats_per_batch(batch_1_cross_2022, batch_2_cross_2022, batch_3_cross_2022, batch_4_cross_2022, n=6))
     print("2021 descriptive statistics for crossing:")
-    print(descriptive_stats_per_batch(batch_1_cross_2021, batch_2_cross_2021, batch_3_cross_2021, batch_4_cross_2021))
+    print(descriptive_stats_per_batch(batch_1_cross_2021, batch_2_cross_2021, batch_3_cross_2021, batch_4_cross_2021, n=15))
     """
     Descriptive stats for periphery cross
     """
     print("2022 descriptive statistics for periphery crossing:")
-    print(descriptive_stats_per_batch(batch_1_periphery_2022, batch_2_periphery_2022, batch_3_periphery_2022, batch_4_periphery_2022))
+    print(descriptive_stats_per_batch(batch_1_periphery_2022, batch_2_periphery_2022, batch_3_periphery_2022, batch_4_periphery_2022, n=6))
     print("2021 descriptive statistics for periphery crossing:")
-    print(descriptive_stats_per_batch(batch_1_periphery_2021, batch_2_periphery_2021, batch_3_periphery_2021, batch_4_periphery_2021))
+    print(descriptive_stats_per_batch(batch_1_periphery_2021, batch_2_periphery_2021, batch_3_periphery_2021, batch_4_periphery_2021, n=15))
+    """
+    Descriptive stats for grooming
+    """
+    # print(batch_1_groom_2021)
+    # print(batch_2_groom_2021)
+    # print(batch_3_groom_2021)
+    # print(batch_3_groom_2021)
+    # print("2022 descriptive statistics for grooming:")
+    # print(descriptive_stats_per_batch(batch_1_groom_2022, batch_2_groom_2022, batch_2_groom_2022,
+    #                                   batch_4_groom_2022, groom=True, n=5))
+    # print("2021 descriptive statistics for grooming:")
+    # print(descriptive_stats_per_batch(batch_1_groom_2021, batch_2_groom_2021, batch_3_groom_2021,
+    #                                   batch_4_groom_2021, groom=True, n=15))
+
