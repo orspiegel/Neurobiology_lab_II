@@ -3,8 +3,9 @@
 Lab no2 - behavioral
 
 That code includes:
+
 PART 1 - Open field
-The python file "data analysis" is the code.
+The python file - "data_analysis_open_field.py" is the code: https://github.com/orspiegel/Neurobiology_lab_II/blob/main/data_analysis_open_field.py
 
 0. Methods who can anzlyze the data collected from a group of mice, strolling and stessing in an open field.
 <img width="229" alt="image" src="https://user-images.githubusercontent.com/71634031/208270731-0ba6bb33-f29a-4ffe-9947-c1a08c42c8a7.png">
